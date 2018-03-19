@@ -1,10 +1,6 @@
-FROM openshift/jenkins-2-centos7
+FROM openshift/jenkins-slave-base-centos7
 
 LABEL maintainer="dat.tran@idealo.de"
-
-# Install custom plugins for Jenkins
-COPY plugins.txt /opt/openshift/configuration/plugins.txt
-RUN /usr/local/bin/install-plugins.sh /opt/openshift/configuration/plugins.txt
 
 # Install miniconda
 USER root

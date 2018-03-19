@@ -25,6 +25,22 @@ labels:
   app: jenkins-ephemeral
   template: jenkins-ephemeral-template
 objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/display-name: Jenkins
+    name: jenkins
+  spec:
+    tags:
+    - from:
+        kind: ImageStreamTag
+        name: '2'
+      name: latest
+    - from:
+        kind: DockerImage
+        name: docker.io/openshift/jenkins-2-centos7:v3.9
+      name: '2'
 - kind: Route
   apiVersion: v1
   metadata:
@@ -125,7 +141,7 @@ objects:
   apiVersion: v1
   metadata:
     name: "${JENKINS_SERVICE_NAME}_edit"
-  groupNames: 
+  groupNames:
   subjects:
   - kind: ServiceAccount
     name: "${JENKINS_SERVICE_NAME}"
@@ -165,6 +181,46 @@ objects:
       name: "${JENKINS_SERVICE_NAME}"
     type: ClusterIP
     sessionAffinity: None
+- kind: ConfigMap
+  apiVersion: v1
+  metadata:
+    labels:
+      role: jenkins-slave
+    name: jenkins-slave
+    namespace: ${NAMESPACE}
+  data:
+    template1: |-
+      <org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
+        <inheritFrom></inheritFrom>
+        <name>python</name>
+        <instanceCap>2147483647</instanceCap>
+        <idleMinutes>0</idleMinutes>
+        <label>python</label>
+        <serviceAccount>jenkins</serviceAccount>
+        <nodeSelector></nodeSelector>
+        <volumes/>
+        <containers>
+          <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
+            <name>jnlp</name>
+            <image>datitran/jenkins-slave-python-centos7</image>
+            <privileged>false</privileged>
+            <alwaysPullImage>true</alwaysPullImage>
+            <workingDir>/tmp</workingDir>
+            <command></command>
+            <args>${computer.jnlpmac} ${computer.name}</args>
+            <ttyEnabled>false</ttyEnabled>
+            <resourceRequestCpu></resourceRequestCpu>
+            <resourceRequestMemory></resourceRequestMemory>
+            <resourceLimitCpu></resourceLimitCpu>
+            <resourceLimitMemory></resourceLimitMemory>
+            <envVars/>
+          </org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
+        </containers>
+        <envVars/>
+        <annotations/>
+        <imagePullSecrets/>
+        <nodeProperties/>
+      </org.csanchez.jenkins.plugins.kubernetes.PodTemplate>
 parameters:
 - name: JENKINS_SERVICE_NAME
   displayName: Jenkins Service Name
@@ -190,7 +246,7 @@ parameters:
 - name: JENKINS_IMAGE_STREAM_TAG
   displayName: Jenkins ImageStreamTag
   description: Name of the ImageStreamTag to be used for the Jenkins image.
-  value: JENKINS_IMAGE_STREAM_TAG
+  value: jenkins:2
 - name: KUBERNETES_MASTER
   displayName: Kubernetes Master URL
   description: URL for the Kubernetes Master Node API usually on 443.
