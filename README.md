@@ -11,20 +11,30 @@ oc new-project <project-name>
 ```
 2. Deploy Jenkins:
 ```
-oc new-app jenkins-persistent -p MEMORY_LIMIT="2Gi"
+oc new-app jenkins-persistent
 ```
 3. Add custom Jenkins configuration for data science projects:
 ```
 oc create -f config-map.yaml
 ```
-4. Deploy example application and expose route:
+4. Deploy [example application](https://github.com/idealo/ds-example-project) and expose route:
 ```
-oc new-app https://github.com/idealo/ds-example-project.git \
---strategy=docker \
---name=ds-example-project
+git clone https://github.com/idealo/ds-example-project.git
+cd ds-example-project
+oc new-app -f build-config.yml \
+    -p APPLICATION_NAME=ds-example-project \
+    -p GIT_URL=https://github.com/idealo/ds-example-project.git
+oc new-app -f deployment-config.yml \
+    -p APPLICATION_NAME=ds-example-project
+oc start-build ds-example-project-pipeline
+oc expose svc/ds-example-project
 ```
-* Note: Don't forget to expose the route of the application: `oc expose svc/ds-example-project`
-4. Log into Jenkins and run your pipeline!
+#### Notes
+
+If you want to delete Jenkins and all the related resources then do:
+```
+oc delete all,configmaps,networkpolicy,rolebinding,serviceaccount -l app=jenkins-persistent
+```
 
 ## Requirements
 
