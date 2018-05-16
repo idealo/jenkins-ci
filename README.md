@@ -29,9 +29,9 @@ oc new-app -f deployment-config.yml \
 oc start-build ds-example-project-pipeline
 oc expose svc/ds-example-project
 ```
-#### Notes
+## Notes
 
-If you want to delete Jenkins and all the related resources then do:
+* If you want to delete Jenkins and all the related resources then do:
 ```
 oc delete all,configmaps,networkpolicy,rolebinding,serviceaccount -l app=jenkins-persistent
 ```
