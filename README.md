@@ -5,15 +5,19 @@ Minimal example to setup a Jenkins-CI pipeline for data science projects on Open
 ## Getting Started
 
 0. Start [Minishift](https://github.com/minishift/minishift) with [VirtualBox](https://www.virtualbox.org/): `minishift start --vm-driver=virtualbox`
-1. Create a new project: `oc new-project data-science-ci`
+1. Create a new project:
+```
+oc new-project <project-name>
+```
 2. Deploy Jenkins:
 ```
-oc process -f jenkins-ephemeral-template.yml \
--p NAMESPACE="data-science-ci" \
--p KUBERNETES_MASTER="https://kubernetes.default:443" | oc create -f -
+oc new-app jenkins-persistent -p MEMORY_LIMIT="2Gi"
 ```
-- Note: to get the Kubernetes master url do `oc version` and take the server url. In case of minishift, the url is fixed at `https://192.168.99.100:port` - remember `port`for Kubernetes is at 443
-3. Deploy example application and expose route:
+3. Add custom Jenkins configuration for data science projects:
+```
+oc create -f config-map.yaml
+```
+4. Deploy example application and expose route:
 ```
 oc new-app https://github.com/idealo/ds-example-project.git \
 --strategy=docker \
@@ -24,7 +28,7 @@ oc new-app https://github.com/idealo/ds-example-project.git \
 
 ## Requirements
 
-- Minishift 1.14
+- Minishift 1.17 / OpenShift 3.9
 - VirutalBox 5.2
 
 ## Copyright
