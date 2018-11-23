@@ -21,7 +21,7 @@ data:
       <containers>
         <org.csanchez.jenkins.plugins.kubernetes.ContainerTemplate>
           <name>jnlp</name>
-          <image>idealo/jenkins-slave-python-centos7:latest</image>
+          <image>idealo/jenkins-slave-airflow-centos7:latest</image>
           <privileged>false</privileged>
           <alwaysPullImage>true</alwaysPullImage>
           <workingDir>/tmp</workingDir>
