@@ -2,6 +2,8 @@
 
 Minimal example to setup a Jenkins-CI pipeline for data science projects on OpenShift in a couple of minutes. The goal is to have one CI/CI for each project so that we have no snowflakes.
 
+This project is no longer maintained and has been archived on Jan 7, 2025.
+
 ## Getting Started
 
 0. Start [Minishift](https://github.com/minishift/minishift) with [VirtualBox](https://www.virtualbox.org/): `minishift start --vm-driver=virtualbox`
